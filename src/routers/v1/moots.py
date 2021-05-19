@@ -12,6 +12,9 @@ async def new_moot(data: NewMoot, request: Request) -> Moot:
 
     request.state.auth.raise_for_validity()
 
+    moot = await request.state.db.create_moot(request.state.ids.next(), data.content, request.state.auth.auth.user)
+    return moot.api_ready
+
 @router.get("/{moot_id}", response_model=Moot)
 async def get_moot(moot_id: int, request: Request) -> Moot:
     """Get a Moot by ID."""

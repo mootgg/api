@@ -17,6 +17,20 @@ class Database:
 
         self.pool = await create_pool(getenv("DB_DSN"))
 
+    async def create_moot(self, id: int, content: str, user: m.User) -> m.Moot:
+        """Create a new Moot."""
+
+        async with self.pool.acquire() as conn:
+            moot = await conn.fetchrow("INSERT INTO moots (id, content, author_id) VALUES ($1, $2, $3) RETURNING *;", id, content, user.id)
+
+        return m.Moot(
+            id=moot["id"],
+            author=user,
+            content=moot["content"],
+            hide=moot["hide"],
+            flags=moot["flags"],
+        )
+
     async def get_moot(self, id: int) -> Optional[m.Moot]:
         """Get a Moot by ID."""
 
