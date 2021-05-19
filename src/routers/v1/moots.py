@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request
+from fastapi.exceptions import HTTPException
 
 from src.models.api import Moot, NewMoot
 
@@ -16,6 +17,12 @@ async def get_moot(moot_id: int, request: Request) -> Moot:
     """Get a Moot by ID."""
 
     request.state.auth.raise_for_validity()
+
+    moot = await request.state.db.get_moot(moot_id)
+    if not moot:
+        raise HTTPException(404)
+
+    return moot.api_ready
 
 @router.delete("/{moot_id}", response_model=Moot)
 async def delete_moot(moot_id: int, request: Request) -> Moot:

@@ -27,5 +27,6 @@ async def authenticate(request: Request, call_next) -> Response:
     """Authenticate all requests."""
 
     request.state.auth = await auth(request, db)
+    request.state.db = db
 
     return await call_next(request)
