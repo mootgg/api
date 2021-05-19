@@ -1,4 +1,4 @@
 from fastapi import APIRouter
 
 
-router = APIRouter(prefix="v1")
+router = APIRouter(prefix="/v1")
