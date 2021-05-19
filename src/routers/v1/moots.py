@@ -10,7 +10,7 @@ router = APIRouter(prefix="/moots")
 async def new_moot(data: NewMoot, request: Request) -> Moot:
     """Create a new Moot."""
 
-    request.state.auth.raise_for_validity()
+    request.state.auth.raise_for_user()
 
     moot = await request.state.db.create_moot(request.state.ids.next(), data.content, request.state.auth.auth.user)
     return moot.api_ready

@@ -27,6 +27,11 @@ class AuthState:
         if not self.internal:
             raise HTTPException(403, "Access denied: Internal endpoint.")
 
+    def raise_for_user(self) -> None:
+        self.raise_for_validity()
+        if not self.auth:
+            raise HTTPException(403, "Access denied: External endpoint.")
+
     def raise_for_access(self, resource: int) -> bool:
         if not BitField(self.auth.perms)[resource]:
             raise HTTPException(403, "Access denied: Bad resource.")
