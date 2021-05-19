@@ -64,3 +64,20 @@ class Database:
             )
 
         return m.User(**dict(user))
+
+    async def get_user(self, id: int) -> Optional[m.User]:
+        """Get a user by ID."""
+
+        async with self.pool.acquire() as conn:
+            user = await conn.fetchrow("SELECT * FROM users WHERE id = $1;", id)
+
+            if not user:
+                return None
+
+        return m.User(**dict(user))
+
+    async def delete_user(self, id: int) -> None:
+        """Delete a user by ID."""
+
+        async with self.pool.acquire() as conn:
+            await conn.execute("DELETE FROM users WHERE id = $1;", id)

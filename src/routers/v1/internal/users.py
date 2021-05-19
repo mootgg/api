@@ -18,3 +18,17 @@ async def new_user(data: NewUser, request: Request) -> User:
     except UniqueViolationError:
         raise HTTPException(400, "User already exists.")
     return user.api_ready
+
+@router.delete("/{user_id}", response_model=User, include_in_schema=False)
+async def delete_user(user_id: int, request: Request) -> User:
+    """Delete a user by ID."""
+
+    request.state.auth.raise_for_internal()
+
+    user = await request.state.db.get_user(user_id)
+    if not user:
+        raise HTTPException(404)
+
+    await request.state.db.delete_user(user_id)
+
+    return user.api_ready
