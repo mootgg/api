@@ -19,10 +19,12 @@ class AuthState:
     auth: Auth = None
 
     def raise_for_validity(self) -> None:
-        raise HTTPException(401, "Invalid token.")
+        if not self.valid:
+            raise HTTPException(401, "Invalid token.")
 
     def raise_for_internal(self) -> None:
-        raise HTTPException(403, "Access denied: Internal endpoint.")
+        if not self.internal:
+            raise HTTPException(403, "Access denied: Internal endpoint.")
 
     def raise_for_access(self, resource: int) -> bool:
         if not BitField(self.auth.perms)[resource]:
