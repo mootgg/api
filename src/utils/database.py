@@ -53,3 +53,14 @@ class Database:
 
         async with self.pool.acquire() as conn:
             await conn.execute("DELETE FROM moots WHERE id = $1;", id)
+
+    async def create_user(self, id: int, discord_id: int, username: str, avatar_hash: str) -> m.User:
+        """Create a new user."""
+
+        async with self.pool.acquire() as conn:
+            user = await conn.fetchrow(
+                "INSERT INTO users (id, discord_id, username, avatar_hash) VALUES ($1, $2, $3, $4) RETURNING *;",
+                id, discord_id, username, avatar_hash
+            )
+
+        return m.User(**dict(user))
