@@ -21,10 +21,10 @@ class Database:
         """Get a Moot by ID."""
 
         async with self.pool.acquire() as conn:
-            moot = await conn.fetchrow("SELECT * FROM Moots WHERE id = $1;", id)
+            moot = await conn.fetchrow("SELECT * FROM moots WHERE id = $1;", id)
             if not moot:
                 return None
-            user = await conn.fetchrow("SELECT * FROM Users WHERE id = $1;", moot["author_id"])
+            user = await conn.fetchrow("SELECT * FROM users WHERE id = $1;", moot["author_id"])
 
         return m.Moot(
             id=moot["id"],
@@ -33,3 +33,9 @@ class Database:
             hide=moot["hide"],
             flags=moot["flags"],
         )
+
+    async def delete_moot(self, id: int) -> None:
+        """Delete a Moot by ID."""
+
+        async with self.pool.acquire() as conn:
+            await conn.execute("DELETE FROM moots WHERE id = $1;", id)

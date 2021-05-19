@@ -29,3 +29,14 @@ async def delete_moot(moot_id: int, request: Request) -> Moot:
     """Delete a Moot by ID."""
 
     request.state.auth.raise_for_validity()
+
+    moot = await request.state.db.get_moot(moot_id)
+    if not moot:
+        raise HTTPException(404)
+
+    if moot.author.id != request.state.auth.auth.user.id:
+        raise HTTPException(403)
+
+    await request.state.db.delete_moot(moot_id)
+
+    return moot.api_ready
