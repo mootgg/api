@@ -23,6 +23,7 @@ class AuthState:
             raise HTTPException(401, "Invalid token.")
 
     def raise_for_internal(self) -> None:
+        self.raise_for_validity()
         if not self.internal:
             raise HTTPException(403, "Access denied: Internal endpoint.")
 
