@@ -12,7 +12,7 @@ from src.utils.database import Database
 from src.utils.ids import IDGenerator
 
 
-app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(docs_url=None, redoc_url="/developers")
 app.include_router(router)
 
 db = Database()
