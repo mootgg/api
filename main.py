@@ -9,12 +9,14 @@ if not getenv("USE_DOCKER_ENV"):
 from src.routers import router
 from src.utils.auth import authenticate as auth
 from src.utils.database import Database
+from src.utils.ids import IDGenerator
 
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.include_router(router)
 
 db = Database()
+ids = IDGenerator()
 
 @app.on_event("startup")
 async def on_startup() -> None:
@@ -28,5 +30,6 @@ async def authenticate(request: Request, call_next) -> Response:
 
     request.state.auth = await auth(request, db)
     request.state.db = db
+    request.state.ids = ids
 
     return await call_next(request)
