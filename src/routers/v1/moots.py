@@ -9,16 +9,16 @@ router = APIRouter(prefix="/moots")
 async def new_moot(data: NewMoot, request: Request) -> Moot:
     """Create a new Moot."""
 
-    pass
+    request.state.auth.raise_for_validity()
 
 @router.get("/{moot_id}", response_model=Moot)
 async def get_moot(moot_id: int, request: Request) -> Moot:
     """Get a Moot by ID."""
 
-    pass
+    request.state.auth.raise_for_validity()
 
 @router.delete("/{moot_id}", response_model=Moot)
 async def delete_moot(moot_id: int, request: Request) -> Moot:
     """Delete a Moot by ID."""
 
-    pass
+    request.state.auth.raise_for_validity()
