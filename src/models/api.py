@@ -24,3 +24,9 @@ class NewUser(BaseModel):
     discord_id: int
     username: str
     avatar_hash: str
+
+
+class Session(BaseModel):
+    token: str
+    user: User
+    expires: str  # ISO 8601 timestamp

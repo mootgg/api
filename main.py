@@ -1,5 +1,6 @@
 from os import getenv
 
+from aiohttp import ClientSession
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response
 
@@ -17,6 +18,7 @@ app.include_router(router)
 
 db = Database()
 ids = IDGenerator()
+sess = ClientSession()
 
 @app.on_event("startup")
 async def on_startup() -> None:
@@ -31,5 +33,6 @@ async def authenticate(request: Request, call_next) -> Response:
     request.state.auth = await auth(request, db)
     request.state.db = db
     request.state.ids = ids
+    request.state.sess = sess
 
     return await call_next(request)
