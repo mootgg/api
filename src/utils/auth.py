@@ -18,8 +18,15 @@ class AuthState:
     internal: bool = False
     auth: Auth = None
 
-    def can_access(self, resource: int) -> bool:
-        return bool(BitField(self.auth.perms)[resource])
+    def raise_for_validity(self) -> None:
+        raise HTTPException(401, "Invalid token.")
+
+    def raise_for_internal(self) -> None:
+        raise HTTPException(403, "Access denied: Internal endpoint.")
+
+    def raise_for_access(self, resource: int) -> bool:
+        if not BitField(self.auth.perms)[resource]:
+            raise HTTPException(403, "Access denied: Bad resource.")
 
 
 async def authenticate(request: Request, database: Database) -> AuthState:
