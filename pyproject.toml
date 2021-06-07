@@ -13,6 +13,7 @@ uvicorn = "^0.13.4"
 asyncpg = "^0.23.0"
 itsdangerous = "^2.0.1"
 aiohttp = "^3.7.4"
+starlette-discord = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
 

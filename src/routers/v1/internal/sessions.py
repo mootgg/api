@@ -1,23 +1,28 @@
 from datetime import datetime, timedelta
+from os import getenv
 from random import randrange
 from secrets import token_hex
 
-from asyncpg.exceptions import UniqueViolationError
 from fastapi import APIRouter, Request
 from fastapi.exceptions import HTTPException
+from starlette_discord import DiscordOAuthClient
 
-from src.models.api import Session, User
-from src.utils.oauth import get_user_details
+from src.models.api import Session
 
 
 router = APIRouter(prefix="/sessions")
+discord = DiscordOAuthClient(
+    getenv("CLIENT_ID"),
+    getenv("CLIENT_SECRET"),
+    ""
+)
 
 @router.post("/{token}", response_model=Session, include_in_schema=False)
 async def new_session(token: str, request: Request) -> Session:
     """Create a new user session."""
 
     request.state.auth.raise_for_internal()
-    raw_user = await get_user_details(request.state.sess, token)
+    raw_user = await discord.login(token)
 
     user = await request.state.db.get_user(int(raw_user["id"]))
 
@@ -45,4 +50,16 @@ async def new_session(token: str, request: Request) -> Session:
 async def get_session(session_token: str, request: Request) -> Session:
     """Get a session by its token."""
 
-    pass
+    request.state.auth.raise_for_internal()
+
+    session = await request.state.db.fetchrow("SELECT * FROM Sessions WHERE token = $1;", session_token)
+    if not session:
+        raise HTTPException(404)
+
+    user = await request.state.db.get_user(session["parent_id"])
+
+    return Session(
+        token=session_token,
+        user=user.api_ready,
+        expires=session["expires"].isoformat(),
+    )
