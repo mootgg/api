@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from random import randrange
 from secrets import token_hex
 
 from asyncpg.exceptions import UniqueViolationError
@@ -24,7 +25,7 @@ async def new_session(token: str, request: Request) -> Session:
         user = await request.state.db.create_user(
             request.state.ids.next(),
             int(raw_user["id"]),
-            raw_user["username"] + "#" + raw_user["discriminator"],
+            raw_user["username"] + "#" + raw_user["discriminator"] + str(randrange(1,9999)).zfill(4),
             raw_user.get("avatar", None)
         )
 
