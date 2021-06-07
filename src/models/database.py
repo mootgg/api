@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from .api import Moot as APIMoot, User as APIUser
+from .api import Moot as APIMoot
+from .api import User as APIUser
 
 
 @dataclass

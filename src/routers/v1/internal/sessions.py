@@ -5,10 +5,8 @@ from secrets import token_hex
 
 from fastapi import APIRouter, Request
 from fastapi.exceptions import HTTPException
-from starlette_discord import DiscordOAuthClient
-
 from src.models.api import Session
-
+from starlette_discord import DiscordOAuthClient
 
 router = APIRouter(prefix="/sessions")
 discord = DiscordOAuthClient(getenv("CLIENT_ID"), getenv("CLIENT_SECRET"), "")

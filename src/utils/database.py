@@ -1,8 +1,7 @@
 from os import getenv, walk
 from typing import Optional
 
-from asyncpg import create_pool, Pool
-
+from asyncpg import Pool, create_pool
 from src.models import database as m
 
 

@@ -3,12 +3,10 @@ from os import getenv
 
 from fastapi import Request
 from fastapi.exceptions import HTTPException
-
-from src.models.database import User, Auth
+from src.models.database import Auth, User
 from src.utils.bitfield import BitField
 from src.utils.database import Database
 from src.utils.flags import UserFlags
-
 
 INTERNAL_TOKEN = getenv("INTERNAL_TOKEN")
 

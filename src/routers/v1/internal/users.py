@@ -1,9 +1,7 @@
 from asyncpg.exceptions import UniqueViolationError
 from fastapi import APIRouter, Request
 from fastapi.exceptions import HTTPException
-
-from src.models.api import User, NewUser
-
+from src.models.api import NewUser, User
 
 router = APIRouter(prefix="/users")
 
