@@ -5,8 +5,9 @@ from fastapi import Request
 from fastapi.exceptions import HTTPException
 
 from src.models.database import User, Auth
-from src.utils.database import Database
 from src.utils.bitfield import BitField
+from src.utils.database import Database
+from src.utils.flags import UserFlags
 
 
 INTERNAL_TOKEN = getenv('INTERNAL_TOKEN')
@@ -35,6 +36,10 @@ class AuthState:
     def raise_for_access(self, resource: int) -> bool:
         if not BitField(self.auth.perms)[resource]:
             raise HTTPException(403, "Access denied: Bad resource.")
+
+    @property
+    def admin(self) -> bool:
+        return self.valid and (self.internal or BitField(self.auth.user.flags)[UserFlags.ADMIN])
 
 
 async def authenticate(request: Request, database: Database) -> AuthState:

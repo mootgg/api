@@ -37,8 +37,9 @@ async def delete_moot(moot_id: int, request: Request) -> Moot:
     if not moot:
         raise HTTPException(404)
 
-    if moot.author.id != request.state.auth.auth.user.id:
-        raise HTTPException(403)
+    if not request.state.auth.admin:
+        if moot.author.id != request.state.auth.auth.user.id:
+            raise HTTPException(403)
 
     await request.state.db.delete_moot(moot_id)
 
