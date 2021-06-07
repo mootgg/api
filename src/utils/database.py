@@ -50,6 +50,16 @@ class Database:
             if not res:
                 break
 
+    async def run_migration(self, filename: str, num: int):
+        try:
+            with open(f"./src/data/{filename}") as f:
+                await self.execute(f.read())
+            await self.execute("INSERT INTO Migrations VALUES ($1);", num)
+        except Exception as e:
+            return False
+        else:
+            return True
+
     async def create_moot(self, id: int, content: str, user: m.User) -> m.Moot:
         """Create a new Moot."""
 
