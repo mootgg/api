@@ -6,14 +6,18 @@ from src.models.api import Moot, NewMoot
 
 router = APIRouter(prefix="/moots")
 
+
 @router.post("/", response_model=Moot)
 async def new_moot(data: NewMoot, request: Request) -> Moot:
     """Create a new Moot."""
 
     request.state.auth.raise_for_user()
 
-    moot = await request.state.db.create_moot(request.state.ids.next(), data.content, request.state.auth.auth.user)
+    moot = await request.state.db.create_moot(
+        request.state.ids.next(), data.content, request.state.auth.auth.user
+    )
     return moot.api_ready
+
 
 @router.get("/{moot_id}", response_model=Moot)
 async def get_moot(moot_id: int, request: Request) -> Moot:
@@ -26,6 +30,7 @@ async def get_moot(moot_id: int, request: Request) -> Moot:
         raise HTTPException(404)
 
     return moot.api_ready
+
 
 @router.delete("/{moot_id}", response_model=Moot)
 async def delete_moot(moot_id: int, request: Request) -> Moot:

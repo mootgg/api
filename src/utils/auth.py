@@ -10,7 +10,7 @@ from src.utils.database import Database
 from src.utils.flags import UserFlags
 
 
-INTERNAL_TOKEN = getenv('INTERNAL_TOKEN')
+INTERNAL_TOKEN = getenv("INTERNAL_TOKEN")
 
 
 @dataclass
@@ -39,7 +39,9 @@ class AuthState:
 
     @property
     def admin(self) -> bool:
-        return self.valid and (self.internal or BitField(self.auth.user.flags)[UserFlags.ADMIN])
+        return self.valid and (
+            self.internal or BitField(self.auth.user.flags)[UserFlags.ADMIN]
+        )
 
 
 async def authenticate(request: Request, database: Database) -> AuthState:
@@ -62,7 +64,10 @@ async def authenticate(request: Request, database: Database) -> AuthState:
         return AuthState(valid=True, internal=True)
 
     async with database.pool.acquire() as conn:
-        access = await conn.fetchrow("SELECT * FROM api_keys INNER JOIN users ON (api_keys.parent_id = users.id) WHERE api_keys.token = $1;", token)
+        access = await conn.fetchrow(
+            "SELECT * FROM api_keys INNER JOIN users ON (api_keys.parent_id = users.id) WHERE api_keys.token = $1;",
+            token,
+        )
 
     if not access:
         return AuthState(valid=False)

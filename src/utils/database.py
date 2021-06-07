@@ -26,7 +26,9 @@ class Database:
             return
 
         try:
-            migration = await self.fetchrow("SELECT id FROM Migrations ORDER BY id DESC LIMIT 1;")
+            migration = await self.fetchrow(
+                "SELECT id FROM Migrations ORDER BY id DESC LIMIT 1;"
+            )
         except Exception as e:
             migration = None
 
@@ -64,7 +66,12 @@ class Database:
         """Create a new Moot."""
 
         async with self.pool.acquire() as conn:
-            moot = await conn.fetchrow("INSERT INTO moots (id, content, author_id) VALUES ($1, $2, $3) RETURNING *;", id, content, user.id)
+            moot = await conn.fetchrow(
+                "INSERT INTO moots (id, content, author_id) VALUES ($1, $2, $3) RETURNING *;",
+                id,
+                content,
+                user.id,
+            )
 
         return m.Moot(
             id=moot["id"],
@@ -81,7 +88,9 @@ class Database:
             moot = await conn.fetchrow("SELECT * FROM moots WHERE id = $1;", id)
             if not moot:
                 return None
-            user = await conn.fetchrow("SELECT * FROM users WHERE id = $1;", moot["author_id"])
+            user = await conn.fetchrow(
+                "SELECT * FROM users WHERE id = $1;", moot["author_id"]
+            )
 
         return m.Moot(
             id=moot["id"],
@@ -97,13 +106,18 @@ class Database:
         async with self.pool.acquire() as conn:
             await conn.execute("DELETE FROM moots WHERE id = $1;", id)
 
-    async def create_user(self, id: int, discord_id: int, username: str, avatar_hash: str) -> m.User:
+    async def create_user(
+        self, id: int, discord_id: int, username: str, avatar_hash: str
+    ) -> m.User:
         """Create a new user."""
 
         async with self.pool.acquire() as conn:
             user = await conn.fetchrow(
                 "INSERT INTO users (id, discord_id, username, avatar_hash) VALUES ($1, $2, $3, $4) RETURNING *;",
-                id, discord_id, username, avatar_hash
+                id,
+                discord_id,
+                username,
+                avatar_hash,
             )
 
         return m.User(**dict(user))

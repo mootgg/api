@@ -20,11 +20,13 @@ db = Database()
 ids = IDGenerator()
 sess = ClientSession()
 
+
 @app.on_event("startup")
 async def on_startup() -> None:
     """Initialise the database."""
 
     await db.ainit()
+
 
 @app.middleware("http")
 async def authenticate(request: Request, call_next) -> Response:

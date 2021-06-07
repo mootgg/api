@@ -11,11 +11,8 @@ from src.models.api import Session
 
 
 router = APIRouter(prefix="/sessions")
-discord = DiscordOAuthClient(
-    getenv("CLIENT_ID"),
-    getenv("CLIENT_SECRET"),
-    ""
-)
+discord = DiscordOAuthClient(getenv("CLIENT_ID"), getenv("CLIENT_SECRET"), "")
+
 
 @router.post("/{token}", response_model=Session, include_in_schema=False)
 async def new_session(token: str, request: Request) -> Session:
@@ -30,15 +27,20 @@ async def new_session(token: str, request: Request) -> Session:
         user = await request.state.db.create_user(
             request.state.ids.next(),
             int(raw_user["id"]),
-            raw_user["username"] + "#" + raw_user["discriminator"] + str(randrange(1,9999)).zfill(4),
-            raw_user.get("avatar", None)
+            raw_user["username"]
+            + "#"
+            + raw_user["discriminator"]
+            + str(randrange(1, 9999)).zfill(4),
+            raw_user.get("avatar", None),
         )
 
     session_token = token_hex(64)
     expires = datetime.utcnow() + timedelta(days=7)
 
     async with request.state.db.pool.acquire() as conn:
-        await conn.execute("INSERT INTO sessions VALUES ($1, $2, $3);", session_token, user.id, expires)
+        await conn.execute(
+            "INSERT INTO sessions VALUES ($1, $2, $3);", session_token, user.id, expires
+        )
 
     return Session(
         token=session_token,
@@ -46,13 +48,16 @@ async def new_session(token: str, request: Request) -> Session:
         expires=expires.isoformat(),
     )
 
+
 @router.get("/{session_token}", response_model=Session, include_in_schema=False)
 async def get_session(session_token: str, request: Request) -> Session:
     """Get a session by its token."""
 
     request.state.auth.raise_for_internal()
 
-    session = await request.state.db.fetchrow("SELECT * FROM Sessions WHERE token = $1;", session_token)
+    session = await request.state.db.fetchrow(
+        "SELECT * FROM Sessions WHERE token = $1;", session_token
+    )
     if not session:
         raise HTTPException(404)
 

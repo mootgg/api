@@ -22,6 +22,7 @@ class User:
             flags=self.flags,
         )
 
+
 @dataclass
 class Auth:
     token: str
