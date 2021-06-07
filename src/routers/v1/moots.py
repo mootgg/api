@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from src.models.api import Moot, NewMoot
+from src.utils.types import Request
 
 router = APIRouter(prefix="/moots")
 

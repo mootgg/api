@@ -3,9 +3,10 @@ from os import getenv
 from random import randrange
 from secrets import token_hex
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from src.models.api import Session
+from src.utils.types import Request
 from starlette_discord import DiscordOAuthClient
 
 router = APIRouter(prefix="/sessions")
