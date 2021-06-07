@@ -1,4 +1,4 @@
-from os import getenv
+from os import getenv, walk
 from typing import Optional
 
 from asyncpg import create_pool, Pool
@@ -16,6 +16,39 @@ class Database:
         """Asynchronously initialize the database."""
 
         self.pool = await create_pool(getenv("DB_DSN"))
+
+        await self.automigrate()
+
+    async def automigrate(self):
+        allow = getenv("AUTOMIGRATE", "true")
+
+        if allow != "true":
+            return
+
+        try:
+            migration = await self.fetchrow("SELECT id FROM Migrations ORDER BY id DESC LIMIT 1;")
+        except Exception as e:
+            migration = None
+
+        migration = migration["id"] if migration else 0
+
+        fs = []
+
+        for _root, _dirs, files in walk("./src/data/"):
+            for file in files:
+                mnum = int(file[0:4])
+                fs.append((mnum, file))
+
+        fs.sort()
+        fs = [f for f in fs if f[0] > migration]
+
+        if not fs:
+            return
+
+        for file in fs:
+            res = await self.run_migration(file[1], file[0])
+            if not res:
+                break
 
     async def create_moot(self, id: int, content: str, user: m.User) -> m.Moot:
         """Create a new Moot."""
